@@ -5,6 +5,8 @@ const path = require("path");
 const morgan = require("morgan");
 const connectDB = require("./config/db");
 
+const app = express();
+
 dotenv.config({ path: "./config/config.env" });
 connectDB();
 
@@ -14,6 +16,10 @@ app.use(express.json());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+
+app.get("/getMe", (req, res) => {
+  res.send("Ok");
+});
 
 const PORT = process.env.PORT || 8000;
 

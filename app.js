@@ -21,6 +21,10 @@ app.get("/getMe", (req, res) => {
   res.send("Ok");
 });
 
+app.use("/employee", require("./routers/employee"));
+app.use("/", require("./routers/auth"));
+app.use("/team", require("./routers/team"));
+
 const PORT = process.env.PORT || 8000;
 
 app.listen(

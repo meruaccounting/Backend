@@ -3,16 +3,11 @@ const User = require("./user");
 const Project = require("../models/project");
 const Schema = mongoose.Schema;
 
-const teamSchema = new Schema({
+const clientSchema = new Schema({
   name: {
     type: String,
   },
-  employees: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: User,
-    },
-  ],
+
   projects: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -21,6 +16,6 @@ const teamSchema = new Schema({
   ],
 });
 
-const Team = mongoose.model("Team", teamSchema);
+const Client = mongoose.model("Client", clientSchema);
 
-module.exports = Team;
+module.exports = Client;

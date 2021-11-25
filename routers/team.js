@@ -1,23 +1,21 @@
 const express = require("express");
 const Team = require("../models/team");
 const User = require("../models/user");
+const { authPass } = require("../controllers/authController");
 
 const router = express.Router();
 
-router.post("/add/:id", async (req, res) => {
-  const id = req.params.id;
-  const name = req.body.name;
+router.post("/create", authPass, async (req, res) => {
+  const manager = req.user;
+  console.log(manager);
+  const { name } = req.body;
   try {
-    const team = new Team({
-      name,
-    });
-    console.log(team);
+    const team = new Team({ name });
     await team.save();
-    team.employees.push(id);
+    team.manager = manager._id;
     await team.save();
-
-    res.json({
-      status: "Ok",
+    res.status(201).json({
+      status: "Created Team",
       data: team,
     });
   } catch (error) {
@@ -28,12 +26,42 @@ router.post("/add/:id", async (req, res) => {
   }
 });
 
-router.patch("/updateMember", async (req, res) => {
+router.post("/add/:id", authPass, async (req, res) => {
+  const id = req.params.id;
+  const employee = req.user;
+  if (employee.role === "manager") {
+    try {
+      co;
+      console.log(team);
+      await team.save();
+      team.employees.push(id);
+      await team.save();
+
+      res.json({
+        status: "Ok",
+        data: team,
+      });
+    } catch (error) {
+      res.json({
+        status: "Error",
+        data: error,
+      });
+    }
+  } else {
+    res.json({
+      message: "UnAuthorized",
+    });
+  }
+});
+
+router.patch("/updateMember", authPass, async (req, res) => {
+  const manager = req.user;
+
   const employeeId = req.body.employeeId;
   const teamId = req.body.teamId;
   var alreadyMember = false;
   try {
-    const team = await Team.findById(teamId);
+    const team = await Team.findOne({ manger: manager._id });
     console.log(team);
     team.employees.forEach((employee) => {
       console.log(employee);
@@ -66,11 +94,10 @@ router.patch("/updateMember", async (req, res) => {
 });
 
 router.delete("/removeMember", async (req, res) => {
-
   const employeeId = req.body.employeeId;
 
   const teamId = req.body.teamId;
-  
+
   var alreadyMember = false;
 
   try {
@@ -100,7 +127,6 @@ router.delete("/removeMember", async (req, res) => {
       status: "Ok",
       data: team,
     });
-
   } catch (error) {
     res.json({
       status: "Error",

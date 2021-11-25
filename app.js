@@ -24,6 +24,8 @@ app.get("/getMe", (req, res) => {
 app.use("/employee", require("./routers/employee"));
 app.use("/", require("./routers/auth"));
 app.use("/team", require("./routers/team"));
+app.use("/client", require("./routers/client"));
+app.use("/project", require("./routers/project"));
 
 const PORT = process.env.PORT || 8000;
 

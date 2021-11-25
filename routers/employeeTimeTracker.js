@@ -6,7 +6,7 @@ const router = express.Router();
 
 var moment = require("moment"); // require
 moment().format();
-router.patch("/add/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   const id = req.params.id;
   const name = req.body.name;
   const date = req.body.date;
@@ -46,6 +46,10 @@ router.patch("/add/:id", async (req, res) => {
       data: error,
     });
   }
+});
+
+router.get("/timeCount", (req, res) => {
+  con;
 });
 
 module.exports = router;

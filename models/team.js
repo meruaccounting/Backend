@@ -7,16 +7,20 @@ const teamSchema = new Schema({
   name: {
     type: String,
   },
+  manager: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   employees: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: User,
+      ref: "User",
     },
   ],
   projects: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: Project,
+      ref: "Project",
     },
   ],
 });

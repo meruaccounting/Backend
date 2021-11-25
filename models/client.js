@@ -7,11 +7,14 @@ const clientSchema = new Schema({
   name: {
     type: String,
   },
-
+  manager: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   projects: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: Project,
+      ref: "Project",
     },
   ],
 });

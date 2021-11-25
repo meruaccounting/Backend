@@ -8,14 +8,18 @@ var moment = require("moment"); // require
 moment().format();
 
 router.patch("/add/:id", async (req, res) => {
+  const startTime = req.body.startTime;
+  const endTime = req.body.endTime;
   const id = req.params.id;
   const name = req.body.name;
   const date = req.body.date;
   const hours = req.body.hours;
+  const activityLevelTotal = req.body.activityLevelTotal;
   const activityLevel = req.body.activityLevel;
   const time = req.body.time;
   const url = req.body.url;
   const taskName = req.body.taskName;
+  var totalHours;
 
   try {
     const employee = await User.findById(id);
@@ -25,11 +29,18 @@ router.patch("/add/:id", async (req, res) => {
     if (!employee) {
       return res.status(404).send("Employee Not Found");
     }
+
     const screenShot = {
       activityLevel: activityLevel,
       url: url,
       time: moment(time, "hh:mm:ss"),
       taskName: taskName,
+    };
+    const timeRange = {
+      startTime: moment(startTime, "hh:mm:ss"),
+      endTime: moment(endTime, "hh:mm:ss"),
+      activityLevelTotal,
+      screenShot,
     };
     employee.day.forEach(async (day, index) => {
       console.log(moment(day.date).format("DD/MM/YYYY"));
@@ -38,7 +49,7 @@ router.patch("/add/:id", async (req, res) => {
         console.log("Inside Date Equals");
         found = true;
         console.log(day.screenShots);
-        day.screenShots.push(screenShot);
+        day.timeRange.push(timeRange);
       } else {
         console.log("not found");
       }
@@ -47,14 +58,7 @@ router.patch("/add/:id", async (req, res) => {
       const day = {
         date: moment(date, "DD-MM-YYYY"),
         hours: hours,
-        screenShots: [
-          {
-            activityLevel: activityLevel,
-            url: url,
-            time: moment(time, "hh:mm:ss"),
-            taskName: taskName,
-          },
-        ],
+        timeRange,
       };
       console.log(day);
 

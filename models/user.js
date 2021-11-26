@@ -8,9 +8,13 @@ const userSchema = new Schema({
     // default: "admin",
   },
   company: String,
-  name: {
+  fistName: {
     type: String,
   },
+  lastName: {
+    type: String,
+  },
+
   email: {
     type: String,
   },
@@ -21,6 +25,18 @@ const userSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: Team,
   },
+  Settings: {
+    ScreenShotPerHour: Number,
+    AllowBlur: Boolean,
+    AppsAndUrlTracking: Boolean,
+    WeeklyTimeLimit: Number,
+    AutoPause: Number,
+    OfflineTime: Boolean,
+    NotifyUser: Boolean,
+    WeekStart: String,
+    CurrencySymbol: String,
+  },
+  pay: Number,
   day: [
     {
       date: Date,

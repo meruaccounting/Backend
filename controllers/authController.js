@@ -54,7 +54,7 @@ const login = async (req, res) => {
 
   if (!email || !password) {
     return res.status(401).json({
-      message: "Pls Provide Credentials",
+      message: "Credentials Might Be Null",
     });
   }
 

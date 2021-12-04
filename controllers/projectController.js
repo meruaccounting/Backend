@@ -44,7 +44,6 @@ exports.projectTeam = async (req, res) => {
       if (!team) {
         return res.status(404).send("OOps, no team found");
       }
-      console.log(team);
 
       console.log("THis is project", project);
       project.team.push(teamId);

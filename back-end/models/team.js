@@ -1,30 +1,25 @@
-const mongoose = require("mongoose");
-const User = require("./user");
-const Project = require("../models/project");
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose';
 
-const teamSchema = new Schema({
-  name: {
-    type: String,
+const teamSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    manager: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
-  manager: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  employees: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-  projects: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Project",
-    },
-  ],
-});
+  { timestamps: true }
+);
 
-const Team = mongoose.model("Team", teamSchema);
+teamSchema.methods.setManagerInTeam = async function (managerId) {
+  const team = this;
+  team.manager = managerId;
+  await team.save();
+};
+teamSchema.methods.addEmployees = async function (employeeId) {
+  const team = this;
 
-module.exports = Team;
+  team.employees.push(employeeId);
+  await team.save();
+};
+const Team = mongoose.model('Team', teamSchema);
+
+export default Team;

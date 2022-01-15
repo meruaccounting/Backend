@@ -1,26 +1,17 @@
-import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import React, { useContext } from 'react';
+import {  Navigate } from 'react-router-dom';
+import { Role } from '../_helpers/role';
+import { loginContext } from '../contexts/LoginContext';
+// import { authenticationService } from '../_services/authetication.service';
 
-import { authenticationService } from '@/_services';
+export const PrivateRoute = ({ component: Component, roles, ...rest }) => {
+  const { loginC } = useContext(loginContext);
 
-export const PrivateRoute = ({ component: Component, roles, ...rest }) => (
-  <Route
-    {...rest}
-    render={(props) => {
-      const currentUser = authenticationService.currentUserValue;
-      if (!currentUser) {
-        // not logged in so redirect to login page with the return url
-        return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
-      }
+  console.log(loginC.userData.role);
 
-      // check if route is restricted by role
-      if (roles && roles.indexOf(currentUser.role) === -1) {
-        // role not authorised so redirect to home page
-        return <Redirect to={{ pathname: '/' }} />;
-      }
-
-      // authorised so return component
-      return <Component {...props} />;
-    }}
-  />
-);
+  return loginC && Role.indexOf(loginC.userData.role) <= roles ? (
+    <Component />
+  ) : (
+    <Navigate to="/404" replace />
+  );
+};

@@ -1,26 +1,18 @@
-const mongoose = require("mongoose");
-const User = require("./user");
-const Team = require("./team");
-const Client = require("./client");
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose';
 
-const projectSchema = new Schema({
-  name: {
-    type: String,
+const projectSchema = new mongoose.Schema(
+  {
+    name: { type: String, unique: 'true' },
+    consumeTime: { type: Number, default: 0 },
+    budgetTime: { type: Number, default: 0 },
+    projectLeader: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    employees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    client: { type: mongoose.Schema.Types.ObjectId, ref: 'Client' },
   },
-  client: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: Client,
-  },
+  { timestamps: true }
+);
 
-  team: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: Team,
-    },
-  ],
-});
+const Project = mongoose.model('Project', projectSchema);
 
-const Project = mongoose.model("Project", projectSchema);
-
-module.exports = Project;
+export default Project;

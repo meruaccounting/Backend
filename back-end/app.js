@@ -1,48 +1,62 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const path = require("path");
-const morgan = require("morgan");
-const connectDB = require("./config/db");
+import express from 'express';
+import dotenv from 'dotenv';
+import morgan from 'morgan';
+import colors from 'colors';
+import swaggerUi from 'swagger-ui-express';
+import path from 'path';
+import YAML from 'yamljs';
+import cors from 'cors';
+import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+import connectDB from './config/db.js';
+
+import authRoutes from './routes/auth.js';
+import clientRoutes from './routes/client.js';
+import teamRoutes from './routes/team.js';
+import projectRoutes from './routes/project.js';
+import employeeRoutes from './routes/employee.js';
+import activityRoutes from './routes/activity.js';
+import reportRoutes from './routes/report.js';
+import uploadRoutes from './routes/upload.js';
+
+dotenv.config({ path: './config/config.env' });
+
+connectDB();
 
 const app = express();
 
-dotenv.config({ path: "./config/config.env" });
-connectDB();
+app.use(cors());
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
 }
 
-app.get("/getMe", (req, res) => {
-  res.send("Ok");
-});
+const swaggerDocs = YAML.load('./api.yaml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "OPTIONS, GET, POST, PUT, PATCH, DELETE"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"
-  );
-  res.header("Access-Control-Allow-Credentials", true);
-  next(); // dont forget this
-});
-app.use("/employee", require("./routers/employee"));
-app.use("/", require("./routers/auth"));
-app.use("/team", require("./routers/team"));
-app.use("/client", require("./routers/client"));
-app.use("/project", require("./routers/project"));
+app.use('/employee', employeeRoutes);
+app.use('/', authRoutes);
+app.use('/team', teamRoutes);
+app.use('/client', clientRoutes);
+app.use('/project', projectRoutes);
+app.use('/activity', activityRoutes);
+app.use('/upload', uploadRoutes);
+app.use('/report', reportRoutes);
 
+const __dirname = path.resolve();
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
+// Middleware
+app.use(notFound);
+app.use(errorHandler);
+
+//PORT
 const PORT = process.env.PORT || 8000;
-
 app.listen(
   PORT,
-  console.log(`Server running in ${process.env.NODE_ENV} mode on ${PORT}`)
+  console.log(
+    `Server running in ${process.env.NODE_ENV} mode on ${PORT}`.yellow.bold
+  )
 );

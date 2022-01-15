@@ -1,41 +1,38 @@
-import React, { useContext, useReducer } from 'react';
+import React, { useReducer, useEffect } from "react";
 // import { setLocalStorage } from "../helper/localStorage";
 
-const loginContext = React.createContext();
+export const loginContext = React.createContext();
 
 const initialValue = {
   isLogin: false,
   userData: {},
   loader: false,
-  err: false
+  err: false,
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'SET_USER_DATA':
-      console.log('resres', action.data);
-
+    case "SET_USER_DATA":
       if (action.data) {
-        localStorage.setItem('ud', JSON.stringify(action.data));
-
+        console.log(action.data);
+        localStorage.setItem("ud", action.data);
         return {
           userData: action.data,
           isLogin: true,
-          loader: false
+          loader: false,
         };
       }
       return {
-        ...state,
         userData: {},
         isLogin: false,
-        loader: false
+        loader: false,
       };
 
-    case 'LOGIN_ERR': {
-      return { ...state, err: true, loader: false };
+    case "LOGIN_ERR": {
+      return { ...state, error: true, loader: false };
     }
-    case 'LOGIN_LOADER': {
-      return { ...state, loader: true };
+    case "LOGIN_LOADER": {
+      return { loader: true };
     }
 
     default:
@@ -44,14 +41,14 @@ const reducer = (state, action) => {
 };
 
 export function LoginProvider(props) {
-  const [loginC, dispatchLogin] = useReducer(reducer, initialValue);
-  return <loginContext.Provider value={{ loginC, dispatchLogin }} {...props} />;
-}
+  const [loginC, dispatchLogin] = useReducer(reducer, initialValue, () => {
+    const localData = localStorage.getItem("loginC");
+    return localData ? JSON.parse(localData) : initialValue;
+  });
 
-export function LoginContext() {
-  const context = useContext(loginContext);
-  if (!context) {
-    throw new Error(' Please use the context inside parent scope');
-  }
-  return context;
+  useEffect(() => {
+    localStorage.setItem("loginC", JSON.stringify(loginC));
+  }, [loginC]);
+
+  return <loginContext.Provider value={{ loginC, dispatchLogin }} {...props} />;
 }
